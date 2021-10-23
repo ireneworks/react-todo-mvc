@@ -1,27 +1,16 @@
 import React, {Component} from 'react';
 import './App.css';
+import TodoHeader from "./components/TodoHeader";
+import Todos from "./components/Todos";
 
 class App extends Component {
   render() {
     return (
       <div className="todo-app">
-        <header>
-          <h1 className="todo-app__header">todos</h1>
-          <input type="text"
-                 className="todo-app__new-todo"/>
-          <button/>
-        </header>
+        {/*<TodoHeader />*/}
         <div className="todo-app__main">
           <ul className="todo-list">
-            <li className="todo-item">
-              <button className="toggle"/>
-              <div className="todo-item__view">
-                <div className="todo-item__view__text">text</div>
-                <button className="todo-item__destroy"/>
-              </div>
-              <input type="text"
-                     className="todo-item__edit"/>
-            </li>
+            <Todos />
           </ul>
         </div>
         <footer className="footer">
