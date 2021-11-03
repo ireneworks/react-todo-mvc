@@ -1,25 +1,29 @@
 import React, { useState } from "react";
 
-export default function TodoForm({}) {
-  const [value, setValue] = useState();
+export default function TodoForm({ onAdd }) {
+  const [value, setValue] = useState("");
 
-  const onChange = (e) => {
-    setValue(e.target.value);
-  };
-
-  const onClick = () => {
-    console.log(value);
+  const onAddHandler = () => {
+    onAdd(value);
+    setValue("");
   };
 
   return (
     <>
       <input
         type="text"
-        onChange={onChange}
-        value={value}
         className="todo-app__new-todo"
+        onChange={(e) => {
+          setValue(e.target.value);
+        }}
+        value={value}
+        onKeyPress={(e) => {
+          if (e.charCode === 13) {
+            onAddHandler();
+          }
+        }}
       />
-      <button onClick={onClick}>추가</button>
+      <button onClick={onAddHandler}>추가</button>
     </>
   );
 }

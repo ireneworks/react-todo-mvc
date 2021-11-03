@@ -275,9 +275,9 @@ label[for="toggle-all"] {
   display: block;
 }
 
-.todo-item__edit {
-  display: none;
-}
+/*.todo-item__edit {*/
+/*  display: none;*/
+/*}*/
 
 .todo-item.editing:last-child {
   margin-bottom: -1px;
