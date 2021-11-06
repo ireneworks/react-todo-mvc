@@ -15,15 +15,19 @@ function Todo({ todo, onDelete, onUpdate }) {
   }, [mode]);
 
   return (
-    <li className="todo-item">
-      <button className="toggle" />
+    <li className={`todo-item ${todo.isCompleted ? "completed" : ""}`}>
+      <button
+        className="toggle"
+        onClick={() => {
+          onUpdate(todo.id, todo.value, !todo.isCompleted);
+        }}
+      />
       {mode === "view" && (
         <div className="todo-item__view">
           <div
             className="todo-item__view__text"
             onDoubleClick={() => {
               setMode("edit");
-              console.log("A");
             }}
           >
             {todo.value}
