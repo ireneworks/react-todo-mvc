@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function TodoForm({}) {
+export default function TodoForm({ onAdd }) {
   const [value, setValue] = useState();
 
   const onChange = (e) => {
@@ -8,7 +8,8 @@ export default function TodoForm({}) {
   };
 
   const onClick = () => {
-    console.log(value);
+    onAdd(value);
+    setValue("");
   };
 
   return (
@@ -16,10 +17,15 @@ export default function TodoForm({}) {
       <input
         type="text"
         onChange={onChange}
+        onKeyPress={(e) => {
+          if (e.charCode === 13) {
+            onClick();
+          }
+        }}
         value={value}
         className="todo-app__new-todo"
       />
-      <button onClick={onClick}>추가</button>
+      <button onClick={onClick}>할 일 추가</button>
     </>
   );
 }
