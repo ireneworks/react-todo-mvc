@@ -1,35 +1,97 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import "./App.css";
 import Todo from "./components/Todo";
 import TodoForm from "./components/TodoForm";
 
-export default function App() {
+export default function App(factory, deps) {
+  const [filter, setFilter] = useState("all");
+  const [todos, setTodos] = useState([
+    { id: 1, value: "이게 일번이다마!", isCompleted: false },
+    { id: 2, value: "이게 이번이다야!!", isCompleted: false },
+  ]);
+  const onAdd = (value) => {
+    setTodos(todos.concat({ id: todos.length + 1, value, isCompleted: false }));
+  };
+  const onUpdate = (id, value, isCompleted) => {
+    setTodos(
+      todos.map((todo) => {
+        if (todo.id === id) {
+          return { ...todo, value, isCompleted };
+        } else {
+          return todo;
+        }
+      })
+    );
+  };
+  const onDelete = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
+  const computedTodos = useMemo(() => {
+    return todos.filter((todo) => {
+      if (filter == "active") {
+        return todo.isCompleted === false;
+      } else if (filter == "completed") {
+        return todo.isCompleted === true;
+      } else {
+        return todo;
+      }
+    });
+  });
+
   return (
     <div className="todo-app">
       <header>
         <h1 className="todo-app__header">Todo List</h1>
-        <TodoForm />
+        <TodoForm onAdd={onAdd} />
       </header>
       <div className="todo-app__main">
         <ul className="todo-list">
-          <Todo />
+          {computedTodos.map((todo) => (
+            <Todo
+              key={todo.id}
+              todo={todo}
+              onUpdate={onUpdate}
+              onDelete={onDelete}
+            />
+          ))}
         </ul>
       </div>
       <footer className="footer">
         <span className="todo-count">
-          <strong>0개</strong>
+          <strong>{computedTodos.length}</strong>
           <span>item</span>
           left
         </span>
         <ul className="todo-filters">
           <li>
-            <a>All</a>
+            <a
+              className={`${filter === "all" ? "selected" : ""}`}
+              onClick={() => {
+                setFilter("all");
+              }}
+            >
+              All
+            </a>
           </li>
           <li>
-            <a>Active</a>
+            <a
+              className={`${filter === "active" ? "selected" : ""}`}
+              onClick={() => {
+                setFilter("active");
+              }}
+            >
+              Active
+            </a>
           </li>
           <li>
-            <a>Completed</a>
+            <a
+              className={`${filter === "completed" ? "selected" : ""}`}
+              onClick={() => {
+                setFilter("completed");
+              }}
+            >
+              Completed
+            </a>
           </li>
         </ul>
       </footer>
