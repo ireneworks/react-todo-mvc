@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 
 function Todo({ todo, onUpdate, onDelete }) {
-  const [mode, setMode] = useState("view");
   const [value, setValue] = useState(todo.value);
+  const [mode, setMode] = useState("view");
   const inputEl = useRef(null);
   useEffect(() => {
     if (mode === "edit") {
@@ -39,19 +39,19 @@ function Todo({ todo, onUpdate, onDelete }) {
         <input
           type="text"
           className="todo-item__edit"
-          value={value}
           ref={inputEl}
+          value={value}
           onChange={(e) => {
             setValue(e.target.value);
+          }}
+          onBlur={() => {
+            setMode("view");
           }}
           onKeyPress={(e) => {
             if (e.charCode === 13) {
               onUpdate(todo.id, value, todo.isCompleted);
               setMode("view");
             }
-          }}
-          onBlur={() => {
-            setMode("view");
           }}
         />
       )}

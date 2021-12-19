@@ -12,11 +12,13 @@ export default function TodoForm({ onAdd }) {
         className="todo-app__new-todo"
         type="text"
         placeholder="할 일을 입력하세요."
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => {
+          setValue(e.target.value);
+        }}
         value={value}
         onKeyPress={(e) => {
           if (e.charCode === 13) {
-            onAddHandler();
+            return onAddHandler();
           }
         }}
       />

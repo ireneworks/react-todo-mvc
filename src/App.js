@@ -1,14 +1,28 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import "./App.css";
 import Todo from "./components/Todo";
 import TodoForm from "./components/TodoForm";
 
-export default function App(factory, deps) {
-  const [filter, setFilter] = useState("all");
+export default function App() {
   const [todos, setTodos] = useState([
-    { id: 1, value: "이게 일번이다마!", isCompleted: false },
-    { id: 2, value: "이게 이번이다야!!", isCompleted: false },
+    { id: 1, value: "이거뭐야!", isCompleted: false },
+    { id: 2, value: "이거sdfsd뭐야!", isCompleted: false },
   ]);
+  const [filter, setFilter] = useState("all");
+  const computedTodos = useMemo(() => {
+    return todos.filter(
+      (todo) => {
+        if (filter === "active") {
+          return todo.isCompleted == false;
+        } else if (filter === "completed") {
+          return todo.isCompleted == true;
+        } else {
+          return todo;
+        }
+      },
+      [todos, filter]
+    );
+  });
   const onAdd = (value) => {
     setTodos(todos.concat({ id: todos.length + 1, value, isCompleted: false }));
   };
@@ -26,18 +40,6 @@ export default function App(factory, deps) {
   const onDelete = (id) => {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
-  const computedTodos = useMemo(() => {
-    return todos.filter((todo) => {
-      if (filter == "active") {
-        return todo.isCompleted === false;
-      } else if (filter == "completed") {
-        return todo.isCompleted === true;
-      } else {
-        return todo;
-      }
-    });
-  });
-
   return (
     <div className="todo-app">
       <header>
@@ -58,7 +60,7 @@ export default function App(factory, deps) {
       </div>
       <footer className="footer">
         <span className="todo-count">
-          <strong>{computedTodos.length}</strong>
+          <strong>{todos.length}</strong>
           <span>item</span>
           left
         </span>
