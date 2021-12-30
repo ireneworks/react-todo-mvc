@@ -5,26 +5,22 @@ import TodoForm from "./components/TodoForm";
 
 export default function App() {
   const [todos, setTodos] = useState([
-    { id: 1, value: "이거뭐야!", isCompleted: false },
-    { id: 2, value: "이거sdfsd뭐야!", isCompleted: false },
+    { id: 1, value: "이게 뭐시당께?", isCompleted: false },
+    { id: 2, value: "오늘은 한번에 끝내자", isCompleted: false },
   ]);
-  const [filter, setFilter] = useState("all");
-  const computedTodos = useMemo(() => {
-    return todos.filter(
-      (todo) => {
-        if (filter === "active") {
-          return todo.isCompleted == false;
-        } else if (filter === "completed") {
-          return todo.isCompleted == true;
-        } else {
-          return todo;
-        }
-      },
-      [todos, filter]
-    );
-  });
+  const [filter, setFilter] = useState("All");
+
   const onAdd = (value) => {
-    setTodos(todos.concat({ id: todos.length + 1, value, isCompleted: false }));
+    setTodos(
+      todos.concat({
+        id: todos.length + 1,
+        value,
+        isCompleted: false,
+      })
+    );
+  };
+  const onDelete = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
   };
   const onUpdate = (id, value, isCompleted) => {
     setTodos(
@@ -37,9 +33,19 @@ export default function App() {
       })
     );
   };
-  const onDelete = (id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
-  };
+
+  const computedTodos = useMemo(() => {
+    return todos.filter((todo) => {
+      if (filter === "Active") {
+        return todo.isCompleted === false;
+      } else if (filter === "Completed") {
+        return todo.isCompleted === true;
+      } else {
+        return todo;
+      }
+    });
+  }, [filter, todos]);
+
   return (
     <div className="todo-app">
       <header>
@@ -52,24 +58,24 @@ export default function App() {
             <Todo
               key={todo.id}
               todo={todo}
-              onUpdate={onUpdate}
               onDelete={onDelete}
+              onUpdate={onUpdate}
             />
           ))}
         </ul>
       </div>
       <footer className="footer">
         <span className="todo-count">
-          <strong>{todos.length}</strong>
+          <strong>{computedTodos.length}</strong>
           <span>item</span>
-          left
         </span>
         <ul className="todo-filters">
           <li>
             <a
-              className={`${filter === "all" ? "selected" : ""}`}
+              className={`${filter === "All" ? "selected" : ""}`}
               onClick={() => {
-                setFilter("all");
+                setFilter("All");
+                console.log(filter);
               }}
             >
               All
@@ -77,9 +83,10 @@ export default function App() {
           </li>
           <li>
             <a
-              className={`${filter === "active" ? "selected" : ""}`}
+              className={`${filter === "Active" ? "selected" : ""}`}
               onClick={() => {
-                setFilter("active");
+                setFilter("Active");
+                console.log(filter);
               }}
             >
               Active
@@ -87,10 +94,11 @@ export default function App() {
           </li>
           <li>
             <a
-              className={`${filter === "completed" ? "selected" : ""}`}
               onClick={() => {
-                setFilter("completed");
+                setFilter("Completed");
+                console.log(filter);
               }}
+              className={`${filter === "Completed" ? "selected" : ""}`}
             >
               Completed
             </a>

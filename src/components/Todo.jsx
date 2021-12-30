@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-function Todo({ todo, onUpdate, onDelete }) {
+function Todo({ todo, onDelete, onUpdate }) {
   const [value, setValue] = useState(todo.value);
   const [mode, setMode] = useState("view");
   const inputEl = useRef(null);
@@ -14,7 +14,7 @@ function Todo({ todo, onUpdate, onDelete }) {
       <button
         className="toggle"
         onClick={() => {
-          onUpdate(todo.id, todo.value, !todo.isCompleted);
+          onUpdate(todo.id, value, !todo.isCompleted);
         }}
       />
       {mode === "view" && (
@@ -35,6 +35,7 @@ function Todo({ todo, onUpdate, onDelete }) {
           />
         </div>
       )}
+
       {mode === "edit" && (
         <input
           type="text"
@@ -44,14 +45,15 @@ function Todo({ todo, onUpdate, onDelete }) {
           onChange={(e) => {
             setValue(e.target.value);
           }}
-          onBlur={() => {
-            setMode("view");
-          }}
           onKeyPress={(e) => {
             if (e.charCode === 13) {
               onUpdate(todo.id, value, todo.isCompleted);
               setMode("view");
             }
+          }}
+          onBlur={() => {
+            setMode("view");
+            setValue(todo.value);
           }}
         />
       )}
