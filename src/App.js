@@ -1,32 +1,75 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import Todo from "./components/Todo";
 import TodoForm from "./components/TodoForm";
+import axios from "axios";
 
 export default function App() {
-  const [todos, setTodos] = useState([
-    { id: 1, value: "이게 뭐시당께?", isCompleted: false },
-    { id: 2, value: "오늘은 한번에 끝내자", isCompleted: false },
-  ]);
+  const [todos, setTodos] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("/api/todos")
+      .then((res) => {
+        if (res.data !== null) {
+          console.log(res.data);
+          return setTodos(res.data);
+        } else {
+          return setTodos([]);
+        }
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
+  // useEffect(() => {
+  //   const getData = JSON.parse(localStorage.getItem("todoData")) || [
+  //     { userId: 1, id: 1, title: "ㅇㅅㅇ테스트중", completed: false },
+  //     { userId: 1, id: 2, title: "왜 안나와?", completed: false },
+  //   ];
+  //   setTodos(getData);
+  // }, [setTodos]);
+  //
+  // useEffect(() => {
+  //   localStorage.setItem("todoData", JSON.stringify(todos));
+  // }, [todos]);
+
   const [filter, setFilter] = useState("All");
 
   const onAdd = (value) => {
-    setTodos(
-      todos.concat({
-        id: todos.length + 1,
-        value,
-        isCompleted: false,
+    const addValue = {
+      id: todos.length + 1,
+      text: value,
+      completed: false,
+    };
+
+    axios
+      .post("/api/todos", {
+        ...addValue,
       })
-    );
+      .then((res) => console.log(res));
+    setTodos(todos.concat(addValue));
   };
   const onDelete = (id) => {
+    axios
+      .delete(`/api/todos/${id}`)
+      .then((res) => console.log(res))
+      .catch((error) => console.log(error));
     setTodos(todos.filter((todo) => todo.id !== id));
   };
-  const onUpdate = (id, value, isCompleted) => {
+  const onUpdate = (id, text, completed) => {
+    axios
+      .put(`/api/todos/${id}`, {
+        id,
+        text,
+        completed,
+      })
+      .then(function (res) {
+        console.log(res);
+      });
     setTodos(
       todos.map((todo) => {
         if (todo.id === id) {
-          return { ...todo, value, isCompleted };
+          return { ...todo, text, completed };
         } else {
           return todo;
         }
@@ -37,9 +80,9 @@ export default function App() {
   const computedTodos = useMemo(() => {
     return todos.filter((todo) => {
       if (filter === "Active") {
-        return todo.isCompleted === false;
+        return todo.completed === false;
       } else if (filter === "Completed") {
-        return todo.isCompleted === true;
+        return todo.completed === true;
       } else {
         return todo;
       }
@@ -75,7 +118,6 @@ export default function App() {
               className={`${filter === "All" ? "selected" : ""}`}
               onClick={() => {
                 setFilter("All");
-                console.log(filter);
               }}
             >
               All
@@ -86,7 +128,6 @@ export default function App() {
               className={`${filter === "Active" ? "selected" : ""}`}
               onClick={() => {
                 setFilter("Active");
-                console.log(filter);
               }}
             >
               Active
@@ -96,7 +137,6 @@ export default function App() {
             <a
               onClick={() => {
                 setFilter("Completed");
-                console.log(filter);
               }}
               className={`${filter === "Completed" ? "selected" : ""}`}
             >

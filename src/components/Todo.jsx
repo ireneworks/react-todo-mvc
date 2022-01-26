@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 function Todo({ todo, onDelete, onUpdate }) {
-  const [value, setValue] = useState(todo.value);
+  const [value, setValue] = useState(todo.text);
   const [mode, setMode] = useState("view");
   const inputEl = useRef(null);
   useEffect(() => {
@@ -10,11 +10,11 @@ function Todo({ todo, onDelete, onUpdate }) {
     }
   }, [mode]);
   return (
-    <li className={`todo-item ${todo.isCompleted ? "completed" : ""}`}>
+    <li className={`todo-item ${todo.completed ? "completed" : ""}`}>
       <button
         className="toggle"
         onClick={() => {
-          onUpdate(todo.id, value, !todo.isCompleted);
+          onUpdate(todo.id, value, !todo.completed);
         }}
       />
       {mode === "view" && (
@@ -25,7 +25,7 @@ function Todo({ todo, onDelete, onUpdate }) {
               setMode("edit");
             }}
           >
-            {todo.value}
+            {todo.text}
           </div>
           <button
             className="todo-item__destroy"
@@ -47,13 +47,13 @@ function Todo({ todo, onDelete, onUpdate }) {
           }}
           onKeyPress={(e) => {
             if (e.charCode === 13) {
-              onUpdate(todo.id, value, todo.isCompleted);
+              onUpdate(todo.id, value, todo.completed);
               setMode("view");
             }
           }}
           onBlur={() => {
             setMode("view");
-            setValue(todo.value);
+            setValue(todo.text);
           }}
         />
       )}
