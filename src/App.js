@@ -8,17 +8,15 @@ export default function App() {
   const [todos, setTodos] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("/api/todos")
-      .then((res) => {
-        if (res.data !== null) {
-          console.log(res.data);
-          return setTodos(res.data);
-        } else {
-          return setTodos([]);
-        }
-      })
-      .catch((error) => console.log(error));
+    (async function () {
+      try {
+        const res = await axios.get("/api/todos");
+        setTodos(res.data);
+      } catch (error) {
+        alert("잠시후 다시 시도해주세요.");
+        console.log(error);
+      }
+    })();
   }, []);
 
   // useEffect(() => {
@@ -35,46 +33,37 @@ export default function App() {
 
   const [filter, setFilter] = useState("All");
 
-  const onAdd = (value) => {
-    const addValue = {
-      id: todos.length + 1,
-      text: value,
-      completed: false,
-    };
+  const onAdd = async (value) => {
+    const res = await axios.post("/api/todos", { text: value });
+    if (res.status === 200) {
+      setTodos(todos.concat(res.data));
+    }
+  };
 
-    axios
-      .post("/api/todos", {
-        ...addValue,
-      })
-      .then((res) => console.log(res));
-    setTodos(todos.concat(addValue));
+  const onDelete = async (id) => {
+    const res = await axios.delete(`/api/todos/${id}`);
+    if (res.status === 200) {
+      setTodos(todos.filter((todo) => todo.id !== id));
+    }
   };
-  const onDelete = (id) => {
-    axios
-      .delete(`/api/todos/${id}`)
-      .then((res) => console.log(res))
-      .catch((error) => console.log(error));
-    setTodos(todos.filter((todo) => todo.id !== id));
-  };
-  const onUpdate = (id, text, completed) => {
-    axios
-      .put(`/api/todos/${id}`, {
-        id,
-        text,
-        completed,
-      })
-      .then(function (res) {
-        console.log(res);
-      });
-    setTodos(
-      todos.map((todo) => {
-        if (todo.id === id) {
-          return { ...todo, text, completed };
-        } else {
-          return todo;
-        }
-      })
-    );
+
+  const onUpdate = async (id, text, completed) => {
+    const res = await axios.put(`/api/todos/${id}`, {
+      id,
+      text,
+      completed,
+    });
+    if (res.status === 200) {
+      setTodos(
+        todos.map((todo) => {
+          if (todo.id === id) {
+            return { ...todo, text, completed };
+          } else {
+            return todo;
+          }
+        })
+      );
+    }
   };
 
   const computedTodos = useMemo(() => {
@@ -97,14 +86,24 @@ export default function App() {
       </header>
       <div className="todo-app__main">
         <ul className="todo-list">
-          {computedTodos.map((todo) => (
-            <Todo
-              key={todo.id}
-              todo={todo}
-              onDelete={onDelete}
-              onUpdate={onUpdate}
-            />
-          ))}
+          {computedTodos.length > 0 &&
+            computedTodos.map((todo) => (
+              <Todo
+                key={todo.id}
+                todo={todo}
+                onDelete={onDelete}
+                onUpdate={onUpdate}
+              />
+            ))}
+          {computedTodos.length === 0 && filter === "All" && (
+            <p>만들어진 테스크가 없습니다.</p>
+          )}
+          {computedTodos.length === 0 && filter === "Active" && (
+            <p>진행할 테스크가 없습니다.</p>
+          )}
+          {computedTodos.length === 0 && filter === "Completed" && (
+            <p>완료된 테스크가 없습니다.</p>
+          )}
         </ul>
       </div>
       <footer className="footer">
