@@ -19,18 +19,6 @@ export default function App() {
     })();
   }, []);
 
-  // useEffect(() => {
-  //   const getData = JSON.parse(localStorage.getItem("todoData")) || [
-  //     { userId: 1, id: 1, title: "ㅇㅅㅇ테스트중", completed: false },
-  //     { userId: 1, id: 2, title: "왜 안나와?", completed: false },
-  //   ];
-  //   setTodos(getData);
-  // }, [setTodos]);
-  //
-  // useEffect(() => {
-  //   localStorage.setItem("todoData", JSON.stringify(todos));
-  // }, [todos]);
-
   const [filter, setFilter] = useState("All");
 
   const onAdd = async (value) => {
@@ -96,13 +84,13 @@ export default function App() {
               />
             ))}
           {computedTodos.length === 0 && filter === "All" && (
-            <p>만들어진 테스크가 없습니다.</p>
+            <p>만들어진 할 일이 없습니다.</p>
           )}
           {computedTodos.length === 0 && filter === "Active" && (
-            <p>진행할 테스크가 없습니다.</p>
+            <p>진행할 할 일이 없습니다.</p>
           )}
           {computedTodos.length === 0 && filter === "Completed" && (
-            <p>완료된 테스크가 없습니다.</p>
+            <p>완료된 할 일이 없습니다.</p>
           )}
         </ul>
       </div>
