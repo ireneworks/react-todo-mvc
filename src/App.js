@@ -2,7 +2,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import Todo from "./components/Todo";
 import TodoForm from "./components/TodoForm";
-import axios from "axios";
+import { requester } from "./Configures/requestConfigure";
+import { ACTIVE, ALL, COMPLETED } from "./constants/todoFilterConstants";
+import { isSuccess } from "./utilities/requestUtilities";
+import { isEmpty } from "./utilities/typeGuards";
 
 export default function App() {
   const [todos, setTodos] = useState([]);
@@ -10,7 +13,7 @@ export default function App() {
   useEffect(() => {
     (async function () {
       try {
-        const res = await axios.get("/api/todos");
+        const res = await requester.get("/todos");
         setTodos(res.data);
       } catch (error) {
         alert("잠시후 다시 시도해주세요.");
@@ -19,52 +22,62 @@ export default function App() {
     })();
   }, []);
 
-  const [filter, setFilter] = useState("All");
+  const [filter, setFilter] = useState(ALL);
 
   const onAdd = async (value) => {
-    const res = await axios.post("/api/todos", { text: value });
-    if (res.status === 200) {
+    const res = await requester.post("/todos", { text: value });
+    if (isSuccess(res)) {
       setTodos(todos.concat(res.data));
     }
   };
 
   const onDelete = async (id) => {
-    const res = await axios.delete(`/api/todos/${id}`);
-    if (res.status === 200) {
+    const res = await requester.delete(`/todos/${id}`);
+    if (isSuccess(res)) {
       setTodos(todos.filter((todo) => todo.id !== id));
     }
   };
 
   const onUpdate = async (id, text, completed) => {
-    const res = await axios.put(`/api/todos/${id}`, {
+    const res = await requester.put(`/todos/${id}`, {
       id,
       text,
       completed,
     });
-    if (res.status === 200) {
+    if (isSuccess(res)) {
       setTodos(
-        todos.map((todo) => {
-          if (todo.id === id) {
-            return { ...todo, text, completed };
-          } else {
-            return todo;
-          }
-        })
+        todos.map((todo) =>
+          todo.id === id ? { ...todo, text, completed } : todo
+        )
       );
     }
   };
 
   const computedTodos = useMemo(() => {
     return todos.filter((todo) => {
-      if (filter === "Active") {
+      if (filter === ACTIVE) {
         return todo.completed === false;
-      } else if (filter === "Completed") {
+      } else if (filter === COMPLETED) {
         return todo.completed === true;
       } else {
         return todo;
       }
     });
   }, [filter, todos]);
+
+  const generatedEmptyMessage = useMemo(() => {
+    if (!isEmpty(computedTodos)) {
+      return "";
+    }
+    switch (filter) {
+      case ALL:
+        return "만들어진 할 일이 없습니다.";
+      case ACTIVE:
+        return "진행할 할 일이 없습니다.";
+      case COMPLETED:
+        return "완료한 할 일이 없습니다.";
+    }
+  }, [computedTodos, filter]);
 
   return (
     <div className="todo-app">
@@ -74,7 +87,7 @@ export default function App() {
       </header>
       <div className="todo-app__main">
         <ul className="todo-list">
-          {computedTodos.length > 0 &&
+          {!isEmpty(computedTodos) &&
             computedTodos.map((todo) => (
               <Todo
                 key={todo.id}
@@ -83,15 +96,7 @@ export default function App() {
                 onUpdate={onUpdate}
               />
             ))}
-          {computedTodos.length === 0 && filter === "All" && (
-            <p>만들어진 할 일이 없습니다.</p>
-          )}
-          {computedTodos.length === 0 && filter === "Active" && (
-            <p>진행할 할 일이 없습니다.</p>
-          )}
-          {computedTodos.length === 0 && filter === "Completed" && (
-            <p>완료된 할 일이 없습니다.</p>
-          )}
+          {!isEmpty(generatedEmptyMessage) && <p>{generatedEmptyMessage}</p>}
         </ul>
       </div>
       <footer className="footer">
@@ -102,9 +107,9 @@ export default function App() {
         <ul className="todo-filters">
           <li>
             <a
-              className={`${filter === "All" ? "selected" : ""}`}
+              className={`${filter === ALL ? "selected" : ""}`}
               onClick={() => {
-                setFilter("All");
+                setFilter(ALL);
               }}
             >
               All
@@ -112,9 +117,9 @@ export default function App() {
           </li>
           <li>
             <a
-              className={`${filter === "Active" ? "selected" : ""}`}
+              className={`${filter === ACTIVE ? "selected" : ""}`}
               onClick={() => {
-                setFilter("Active");
+                setFilter(ACTIVE);
               }}
             >
               Active
@@ -123,9 +128,9 @@ export default function App() {
           <li>
             <a
               onClick={() => {
-                setFilter("Completed");
+                setFilter(COMPLETED);
               }}
-              className={`${filter === "Completed" ? "selected" : ""}`}
+              className={`${filter === COMPLETED ? "selected" : ""}`}
             >
               Completed
             </a>
