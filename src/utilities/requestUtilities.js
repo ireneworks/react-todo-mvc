@@ -1,9 +1,9 @@
-import { SUCCESS_STATUS } from "../constants/httpStatusConstants";
 import { isNullish } from "./typeGuards";
+import { SUCCESS_STATUS } from "../constants/httpStatusConstants";
 
-export function isSuccess(target) {
-  if (isNullish(target) || isNullish(target.status)) {
+export function isSuccess(source) {
+  if (isNullish(source) || isNullish(source.status)) {
     return false;
   }
-  return target.status === SUCCESS_STATUS;
+  return source.status === SUCCESS_STATUS;
 }
