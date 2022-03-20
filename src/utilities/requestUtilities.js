@@ -5,6 +5,5 @@ export function isSuccess(source) {
   if (isNullish(source) || isNullish(source.status)) {
     return false;
   }
-
   return source.status === SUCCESS_STATUS;
 }

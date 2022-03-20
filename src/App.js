@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import Todo from "./components/Todo";
 import TodoForm from "./components/TodoForm";
@@ -8,7 +8,16 @@ import { isEmpty } from "./utilities/typeGuards";
 import { ACTIVE, ALL, COMPLETED } from "./constants/todoFilterConstants";
 
 export default function App() {
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodo] = useState([
+    {
+      id: 1,
+      value: "모찌랑 놀러가기",
+    },
+    {
+      id: 2,
+      value: "일본가고 싶당",
+    },
+  ]);
 
   useEffect(() => {
     (async function () {
@@ -61,9 +70,9 @@ export default function App() {
         return todo.completed === true;
       } else {
         return todo;
-      }
-    });
-  }, [filter, todos]);
+      })
+    );
+  };
 
   const generatedEmptyMessage = useMemo(() => {
     if (!isEmpty(computedTodos)) {
@@ -104,8 +113,9 @@ export default function App() {
       </div>
       <footer className="footer">
         <span className="todo-count">
-          <strong>{computedTodos.length}</strong>
+          <strong>{todos.length}</strong>
           <span>item</span>
+          left
         </span>
         <ul className="todo-filters">
           <li>

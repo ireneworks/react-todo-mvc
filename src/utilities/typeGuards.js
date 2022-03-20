@@ -30,5 +30,6 @@ export function isEmpty(target) {
   }
 
   // object 체크
+
   return Object.keys(target).length === 0;
 }
